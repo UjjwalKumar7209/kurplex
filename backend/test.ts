@@ -1,0 +1,1 @@
+console.log(process.env.TAVILY_API_KEY)
