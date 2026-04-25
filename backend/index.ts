@@ -1,16 +1,30 @@
 import express from 'express'
-import z from 'zod'
 import { tavily } from '@tavily/core'
 import { streamText } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from './prompt'
+import cors from "cors"
+import { middleware } from './middleware'
 
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY })
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
-app.post('/kurplex_ask', async (req, res) => {
+// Past conversatins get
+app.get("/conversation", middleware, async (req, res) => {
+    res.json({
+        userId: req.userId
+    })
+})
+
+// Past conversatins get
+app.get("/conversation/:conversationId", middleware, async (req, res) => {
+
+})
+
+app.post('/kurplex_ask', middleware, async (req, res) => {
   // Step 1 get the query from the user
   const query = req.body.query
 
@@ -59,10 +73,10 @@ app.post('/kurplex_ask', async (req, res) => {
   res.end()
 })
 
-app.post("/kurples_ask/follow_ups", async (req, res) => {
+app.post("/kurples_ask/follow_ups", middleware, async (req, res) => {
     // Step 1 - get the existing chat from the db
     // Step 2 - Forward the full history to the LLM
     // Step 3 - Stream the response to the user
 })
 
-app.listen(3000)
+app.listen(3001)
